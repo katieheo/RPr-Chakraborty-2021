@@ -15,7 +15,8 @@ This study is a replication of:
 - [Peter Kedron](https://sgsup.asu.edu/peter-kedron)
 - [Derrick Burt](https://derrickburt.github.io)
 - [Junyi Zhou](https://emilyzhou112.github.io)
-
+- [Katie Heo](https://katieheo.github.io)
+  
 ## Repository Documents
 
 > Link your reports, manuscripts, presentations, publication DOIs, preregistrations, etc. here. Delete this instruction and unused list items from your final repository. Adjust the file names and paths and add additional items as necessary.
