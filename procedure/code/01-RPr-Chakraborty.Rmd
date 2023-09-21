@@ -1,6 +1,6 @@
 ---
 title: "Reproduction of Chakraborty 2021: An intracategorical analysis of COVID-19 and people with disabilities"
-author: "Joseph Holler, Junyi Zhou, Peter Kedron, Drew An-Pham, Derrick Burt"
+author: "Joseph Holler, Junyi Zhou, Peter Kedron, Drew An-Pham, Derrick Burt, Katie Heo"
 date: "`r Sys.Date()`"
 output: pdf_document
 editor_options:
@@ -10,7 +10,7 @@ knit: (function(inputFile, encoding) {
   rmarkdown::render(inputFile, encoding = encoding, output_dir = "../../docs/report") })
 ---
 
-Version 2.0 \| First Created July 7, 2021 \| Updated June 26, 2023
+Version 2.1 \| First Created July 7, 2021 \| Updated September 21st, 2023
 
 # Abstract
 
@@ -351,7 +351,7 @@ rm(acs, acs_derived, covid)
 ## Missing data
 
 **Unplanned deviation for reproduction**: There is one county with missing disability and poverty data.
-This was not mentioned in the original study or in our pre-analyis plan.
+This was not mentioned in the original study or in our pre-analysis plan.
 However, we replace the missing data with zeros, producing results identical to Chakraborty's.
 
 ```{r missing data}
@@ -364,8 +364,8 @@ acs_covid[is.na(acs_covid$apov_pct), ]$apov_pct <- 0
 ```
 
 ## Map COVID-19 incidence
-
 Map the county level distribution of COVID-19 incidence rates, comparing to Figure 1 of the original study.
+K: what is \n? in the title?
 
 ```{r map-covid-rates, message = FALSE}
 tm_covid_rates <- tm_shape(acs_covid) +
@@ -414,6 +414,7 @@ tm_disability_rates
 ## Descriptive statistics
 
 Calculate descriptive statistics for dependent COVID-19 rate and independent socio-demographic characteristics, reproducing the min, max, mean, and SD columns of original study table 1.
+K: what's full_width = FALSE?
 
 **Planned deviation for reanalysis**: We also calculate the Shapiro Wilk test for normality.
 
@@ -1875,8 +1876,6 @@ tm_gee_weights
 
 # re
 ```
-
-
 
 ```{r save-figures, eval = F}
 # save figures as image files
