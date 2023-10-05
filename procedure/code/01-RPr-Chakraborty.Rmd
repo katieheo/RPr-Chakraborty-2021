@@ -2,12 +2,12 @@
 title: "Reproduction of Chakraborty 2021: An intracategorical analysis of COVID-19 and people with disabilities"
 author: "Joseph Holler, Junyi Zhou, Peter Kedron, Drew An-Pham, Derrick Burt, Katie Heo"
 date: "`r Sys.Date()`"
-output: pdf_document
+output: html_document
 editor_options:
   markdown:
     wrap: sentence
 knit: (function(inputFile, encoding) {
-  rmarkdown::render(inputFile, encoding = encoding, output_dir = "../../docs/report") })
+  rmarkdown::render(inputFile, encoding = encoding, output_dir = "../../docs") })
 ---
 
 Version 2.1 \| First Created July 7, 2021 \| Updated September 21st, 2023
@@ -356,16 +356,20 @@ However, we replace the missing data with zeros, producing results identical to 
 
 ```{r missing data}
 # county with missing data
-filter(acs_covid, is.na(bpov_pct)) %>% st_drop_geometry() %>% kable()
+missing_Data <- acs_covid %>% filter( is.na(bpov_pct))%>% st_drop_geometry()
+missing_Data <- t(missing_Data)
+
+missing_Data %>% kable(caption="Missing Data") %>% kable_styling()
 
 # replace NA with 0 for missing data
 acs_covid[is.na(acs_covid$bpov_pct), ]$bpov_pct <- 0
 acs_covid[is.na(acs_covid$apov_pct), ]$apov_pct <- 0
+
 ```
 
 ## Map COVID-19 incidence
+
 Map the county level distribution of COVID-19 incidence rates, comparing to Figure 1 of the original study.
-K: what is \n? in the title?
 
 ```{r map-covid-rates, message = FALSE}
 tm_covid_rates <- tm_shape(acs_covid) +
@@ -1759,8 +1763,8 @@ Counter-intuitively, the two coefficients for elderly people with disability wer
 
 ### Interpret GEE Model
 
-```{r residuals}
-# create data frame with residuals
+```{r residuals1}
+# create data frame with residuals FOR RACE
 gee_resid <- data.frame(
   select(gee_or_clus_rpdep$models[[1]]$data, covid_rate, ss_clusID),
   data.frame(fitvals = gee_or_clus_rpdep$models[[1]]$fitted.values),
@@ -1786,7 +1790,75 @@ gee_resid <- data.frame(
 # blog: https://www.datascienceblog.net/post/machine-learning/interpreting_generalized_linear_models
 ```
 
-```{r map-residuals}
+```{r residuals2}
+# create data frame with residuals FOR ETHNICITY
+gee_resid2 <- data.frame(
+  select(gee_or_clus_rpdep$models[[2]]$data, covid_rate, ss_clusID),
+  data.frame(fitvals = gee_or_clus_rpdep$models[[2]]$fitted.values),
+  data.frame(residual = gee_or_clus_rpdep$models[[2]]$residual),
+  data.frame(working = residuals(gee_or_clus_rpdep$models[[2]], type = "working")),
+  data.frame(response = residuals(gee_or_clus_rpdep$models[[2]], type = "response")),
+  data.frame(pearson = residuals(gee_or_clus_rpdep$models[[2]], type = "pearson"))
+) %>%
+  mutate(
+    my_working = (covid_rate - fitvals) / fitvals,
+    my_pearson = response * (sqrt(gee_or_clus_rpdep$models[[2]]$prior.weights)) / sqrt(fitvals^2)
+  ) %>%
+  st_sf()
+```
+
+```{r residuals3}
+# create data frame with residuals FOR POVERTY STATUS
+gee_resid3 <- data.frame(
+  select(gee_or_clus_rpdep$models[[3]]$data, covid_rate, ss_clusID),
+  data.frame(fitvals = gee_or_clus_rpdep$models[[3]]$fitted.values),
+  data.frame(residual = gee_or_clus_rpdep$models[[3]]$residual),
+  data.frame(working = residuals(gee_or_clus_rpdep$models[[3]], type = "working")),
+  data.frame(response = residuals(gee_or_clus_rpdep$models[[3]], type = "response")),
+  data.frame(pearson = residuals(gee_or_clus_rpdep$models[[3]], type = "pearson"))
+) %>%
+  mutate(
+    my_working = (covid_rate - fitvals) / fitvals,
+    my_pearson = response * (sqrt(gee_or_clus_rpdep$models[[3]]$prior.weights)) / sqrt(fitvals^2)
+  ) %>%
+  st_sf()
+```
+
+```{r residuals4}
+# create data frame with residuals FOR AGE
+gee_resid4 <- data.frame(
+  select(gee_or_clus_rpdep$models[[4]]$data, covid_rate, ss_clusID),
+  data.frame(fitvals = gee_or_clus_rpdep$models[[4]]$fitted.values),
+  data.frame(residual = gee_or_clus_rpdep$models[[4]]$residual),
+  data.frame(working = residuals(gee_or_clus_rpdep$models[[4]], type = "working")),
+  data.frame(response = residuals(gee_or_clus_rpdep$models[[4]], type = "response")),
+  data.frame(pearson = residuals(gee_or_clus_rpdep$models[[4]], type = "pearson"))
+) %>%
+  mutate(
+    my_working = (covid_rate - fitvals) / fitvals,
+    my_pearson = response * (sqrt(gee_or_clus_rpdep$models[[4]]$prior.weights)) / sqrt(fitvals^2)
+  ) %>%
+  st_sf()
+```
+
+```{r residuals5}
+# create data frame with residuals FOR BIOLOGICAL SEX
+gee_resid5 <- data.frame(
+  select(gee_or_clus_rpdep$models[[5]]$data, covid_rate, ss_clusID),
+  data.frame(fitvals = gee_or_clus_rpdep$models[[5]]$fitted.values),
+  data.frame(residual = gee_or_clus_rpdep$models[[5]]$residual),
+  data.frame(working = residuals(gee_or_clus_rpdep$models[[5]], type = "working")),
+  data.frame(response = residuals(gee_or_clus_rpdep$models[[5]], type = "response")),
+  data.frame(pearson = residuals(gee_or_clus_rpdep$models[[5]], type = "pearson"))
+) %>%
+  mutate(
+    my_working = (covid_rate - fitvals) / fitvals,
+    my_pearson = response * (sqrt(gee_or_clus_rpdep$models[[5]]$prior.weights)) / sqrt(fitvals^2)
+  ) %>%
+  st_sf()
+```
+
+```{r map-residuals6}
 tm_gee_residuals <- tm_shape(gee_resid) +
   tm_polygons("response",
     title = "Race Model Residuals",
@@ -1812,9 +1884,113 @@ tm_gee_residuals <- tm_shape(gee_resid) +
 tm_gee_residuals
 ```
 
-Calculate variance, covariance, correlation, and weights
+```{r map-residuals7}
+tm_gee_residuals2 <- tm_shape(gee_resid2) +
+  tm_polygons("response",
+    title = "Ethnicity Model Residuals",
+    style = "equal",
+    n = 7,
+    border.alpha = .2,
+    lwd = 0.2,
+    palette = "RdBu",
+    legend.hist = FALSE,
+    midpoint = 0
+  ) +
+  tm_shape(state) +
+    tm_borders("grey", lwd = .5) +
+  tm_layout(
+    legend.position = c("left", "bottom"),
+    legend.title.size = 0.8,
+    legend.text.size = 0.5,
+    legend.width = 0.25,
+    legend.hist.size = 0.5,
+    legend.hist.height = 0.15
+  )
 
-```{r weights}
+tm_gee_residuals2
+```
+
+```{r map-residuals8}
+tm_gee_residuals3 <- tm_shape(gee_resid3) +
+  tm_polygons("response",
+    title = "Poverty Status Model Residuals",
+    style = "equal",
+    n = 7,
+    border.alpha = .2,
+    lwd = 0.2,
+    palette = "RdBu",
+    legend.hist = FALSE,
+    midpoint = 0
+  ) +
+  tm_shape(state) +
+    tm_borders("grey", lwd = .5) +
+  tm_layout(
+    legend.position = c("left", "bottom"),
+    legend.title.size = 0.8,
+    legend.text.size = 0.5,
+    legend.width = 0.25,
+    legend.hist.size = 0.5,
+    legend.hist.height = 0.15
+  )
+
+tm_gee_residuals3
+```
+
+```{r map-residuals9}
+tm_gee_residuals4 <- tm_shape(gee_resid4) +
+  tm_polygons("response",
+    title = "Age Model Residuals",
+    style = "equal",
+    n = 7,
+    border.alpha = .2,
+    lwd = 0.2,
+    palette = "RdBu",
+    legend.hist = FALSE,
+    midpoint = 0
+  ) +
+  tm_shape(state) +
+    tm_borders("grey", lwd = .5) +
+  tm_layout(
+    legend.position = c("left", "bottom"),
+    legend.title.size = 0.8,
+    legend.text.size = 0.5,
+    legend.width = 0.25,
+    legend.hist.size = 0.5,
+    legend.hist.height = 0.15
+  )
+
+tm_gee_residuals4
+```
+
+```{r map-residuals10}
+tm_gee_residuals5 <- tm_shape(gee_resid5) +
+  tm_polygons("response",
+    title = "Biological Sex Model Residuals",
+    style = "equal",
+    n = 7,
+    border.alpha = .2,
+    lwd = 0.2,
+    palette = "RdBu",
+    legend.hist = FALSE,
+    midpoint = 0
+  ) +
+  tm_shape(state) +
+    tm_borders("grey", lwd = .5) +
+  tm_layout(
+    legend.position = c("left", "bottom"),
+    legend.title.size = 0.8,
+    legend.text.size = 0.5,
+    legend.width = 0.25,
+    legend.hist.size = 0.5,
+    legend.hist.height = 0.15
+  )
+
+tm_gee_residuals5
+```
+
+Calculate variance, covariance, correlation, and weights for race, ethnicity, poverty status, age, and biological sex.
+
+```{r weights1}
 # calculate k number of observations per cluster
 gee_resid <- gee_resid %>% 
   group_by(ss_clusID) %>% 
@@ -1848,9 +2024,148 @@ gee_resid <- gee_resid %>%
   mutate(w = 1 / (1 + (k - 1) * r))
 ```
 
-Map each county's weight in GEE model.
 
-```{r map-weights}
+```{r weights2}
+# calculate k number of observations per cluster
+gee_resid2 <- gee_resid2 %>% 
+  group_by(ss_clusID) %>% 
+  mutate(k = n()) %>% 
+  ungroup()
+
+grps <- gee_resid2 %>% st_drop_geometry() %>% select(ss_clusID, residual = residual)
+
+# create mask matrix
+n <- length(gee_resid2$ss_clusID)
+# m <- matrix(nrow = n, ncol = n)
+
+# this is very inefficient, but this makes matrix of equal clusID's:
+# just need to omit the bottom-left of matrix and the diagonal
+# selecting for rows 80-90 to help w debugging
+m <- (outer(grps$ss_clusID, grps$ss_clusID, "==") &
+  outer(rownames(grps), rownames(grps), "<"))
+
+# calculate denominators
+covar_d <- sum(m, na.rm = TRUE) - 1
+
+# variance
+v <- sum(grps$residual^2) / (n - 1)
+# covariance
+c <- sum(outer(grps$residual, grps$residual, "*") * m, na.rm = TRUE) / covar_d
+# correlation
+r <- c / v
+
+# calculate weights
+gee_resid2 <- gee_resid2 %>% 
+  mutate(w = 1 / (1 + (k - 1) * r))
+```
+
+
+```{r weights3}
+# calculate k number of observations per cluster
+gee_resid3 <- gee_resid3 %>% 
+  group_by(ss_clusID) %>% 
+  mutate(k = n()) %>% 
+  ungroup()
+
+grps <- gee_resid3 %>% st_drop_geometry() %>% select(ss_clusID, residual = residual)
+
+# create mask matrix
+n <- length(gee_resid3$ss_clusID)
+# m <- matrix(nrow = n, ncol = n)
+
+# this is very inefficient, but this makes matrix of equal clusID's:
+# just need to omit the bottom-left of matrix and the diagonal
+# selecting for rows 80-90 to help w debugging
+m <- (outer(grps$ss_clusID, grps$ss_clusID, "==") &
+  outer(rownames(grps), rownames(grps), "<"))
+
+# calculate denominators
+covar_d <- sum(m, na.rm = TRUE) - 1
+
+# variance
+v <- sum(grps$residual^2) / (n - 1)
+# covariance
+c <- sum(outer(grps$residual, grps$residual, "*") * m, na.rm = TRUE) / covar_d
+# correlation
+r <- c / v
+
+# calculate weights
+gee_resid3 <- gee_resid3 %>% 
+  mutate(w = 1 / (1 + (k - 1) * r))
+```
+
+```{r weights4}
+# calculate k number of observations per cluster
+gee_resid4 <- gee_resid4 %>% 
+  group_by(ss_clusID) %>% 
+  mutate(k = n()) %>% 
+  ungroup()
+
+grps <- gee_resid4 %>% st_drop_geometry() %>% select(ss_clusID, residual = residual)
+
+# create mask matrix
+n <- length(gee_resid4$ss_clusID)
+# m <- matrix(nrow = n, ncol = n)
+
+# this is very inefficient, but this makes matrix of equal clusID's:
+# just need to omit the bottom-left of matrix and the diagonal
+# selecting for rows 80-90 to help w debugging
+m <- (outer(grps$ss_clusID, grps$ss_clusID, "==") &
+  outer(rownames(grps), rownames(grps), "<"))
+
+# calculate denominators
+covar_d <- sum(m, na.rm = TRUE) - 1
+
+# variance
+v <- sum(grps$residual^2) / (n - 1)
+# covariance
+c <- sum(outer(grps$residual, grps$residual, "*") * m, na.rm = TRUE) / covar_d
+# correlation
+r <- c / v
+
+# calculate weights
+gee_resid4 <- gee_resid4 %>% 
+  mutate(w = 1 / (1 + (k - 1) * r))
+```
+
+
+```{r weights5}
+# calculate k number of observations per cluster
+gee_resid5 <- gee_resid5 %>% 
+  group_by(ss_clusID) %>% 
+  mutate(k = n()) %>% 
+  ungroup()
+
+grps <- gee_resid5 %>% st_drop_geometry() %>% select(ss_clusID, residual = residual)
+
+# create mask matrix
+n <- length(gee_resid4$ss_clusID)
+# m <- matrix(nrow = n, ncol = n)
+
+# this is very inefficient, but this makes matrix of equal clusID's:
+# just need to omit the bottom-left of matrix and the diagonal
+# selecting for rows 80-90 to help w debugging
+m <- (outer(grps$ss_clusID, grps$ss_clusID, "==") &
+  outer(rownames(grps), rownames(grps), "<"))
+
+# calculate denominators
+covar_d <- sum(m, na.rm = TRUE) - 1
+
+# variance
+v <- sum(grps$residual^2) / (n - 1)
+# covariance
+c <- sum(outer(grps$residual, grps$residual, "*") * m, na.rm = TRUE) / covar_d
+# correlation
+r <- c / v
+
+# calculate weights
+gee_resid5 <- gee_resid5 %>% 
+  mutate(w = 1 / (1 + (k - 1) * r))
+```
+
+Map each county's weight in GEE model (race, ethnicity, poverty status, age, biological sex).
+
+```{r map-weights6}
 tm_gee_weights <- tm_shape(gee_resid) +
   tm_polygons("w",
     title = "Race Model Weights",
@@ -1859,7 +2174,7 @@ tm_gee_weights <- tm_shape(gee_resid) +
     lwd = 0.2,
     palette = "Oranges",
     legend.hist = FALSE,
-    midpoint = 0
+    midpoint = 0.51
   ) +
   tm_shape(state) +
     tm_borders("grey", lwd = .5) +
@@ -1873,6 +2188,118 @@ tm_gee_weights <- tm_shape(gee_resid) +
   )
 
 tm_gee_weights
+
+# re
+```
+
+
+```{r map-weights10}
+tm_gee_weights2 <- tm_shape(gee_resid2) +
+  tm_polygons("w",
+    title = "Ethnicity Model Weights",
+    style = "jenks",
+    border.alpha = .2,
+    lwd = 0.2,
+    palette = "Oranges",
+    legend.hist = FALSE,
+    midpoint = 0.51
+  ) +
+  tm_shape(state) +
+    tm_borders("grey", lwd = .5) +
+  tm_layout(
+    legend.position = c("left", "bottom"),
+    legend.title.size = 0.8,
+    legend.text.size = 0.5,
+    legend.width = 0.25,
+    legend.hist.size = 0.5,
+    legend.hist.height = 0.15
+  )
+
+tm_gee_weights2
+
+# re
+```
+
+
+```{r map-weights11}
+tm_gee_weights3 <- tm_shape(gee_resid3) +
+  tm_polygons("w",
+    title = "Poverty Status Model Weights",
+    style = "jenks",
+    border.alpha = .2,
+    lwd = 0.2,
+    palette = "Oranges",
+    legend.hist = FALSE,
+    midpoint = 0.51
+  ) +
+  tm_shape(state) +
+    tm_borders("grey", lwd = .5) +
+  tm_layout(
+    legend.position = c("left", "bottom"),
+    legend.title.size = 0.8,
+    legend.text.size = 0.5,
+    legend.width = 0.25,
+    legend.hist.size = 0.5,
+    legend.hist.height = 0.15
+  )
+
+tm_gee_weights3
+
+# re
+```
+
+
+```{r map-weights12}
+tm_gee_weights4 <- tm_shape(gee_resid4) +
+  tm_polygons("w",
+    title = "Age Model Weights",
+    style = "jenks",
+    border.alpha = .2,
+    lwd = 0.2,
+    palette = "Oranges",
+    legend.hist = FALSE,
+    midpoint = 0.51
+  ) +
+  tm_shape(state) +
+    tm_borders("grey", lwd = .5) +
+  tm_layout(
+    legend.position = c("left", "bottom"),
+    legend.title.size = 0.8,
+    legend.text.size = 0.5,
+    legend.width = 0.25,
+    legend.hist.size = 0.5,
+    legend.hist.height = 0.15
+  )
+
+tm_gee_weights4
+
+# re
+```
+
+
+```{r map-weights13}
+tm_gee_weights5 <- tm_shape(gee_resid5) +
+  tm_polygons("w",
+    title = "Biological Sex Model Weights",
+    style = "jenks",
+    border.alpha = .2,
+    lwd = 0.2,
+    palette = "Oranges",
+    legend.hist = FALSE,
+    midpoint = 0.51
+  ) +
+  tm_shape(state) +
+    tm_borders("grey", lwd = .5) +
+  tm_layout(
+    legend.position = c("left", "bottom"),
+    legend.title.size = 0.8,
+    legend.text.size = 0.5,
+    legend.width = 0.25,
+    legend.hist.size = 0.5,
+    legend.hist.height = 0.15
+  )
+
+tm_gee_weights5
 
 # re
 ```
@@ -1964,23 +2391,14 @@ We re-classified the GEE clustering IDs based on state and cluster relative risk
 Upon discovering different results in all of our reproduction GEE models compared to the original study, we added new models to assess the extent to which the different computational environment was causing differences in our results.
 We therefore ran another set of the five GEE models using data provided by the original author, expecting to find identical results.
 
-### Rationale for updated report
-
-This is the second version of our reproduction report.
-The first, registered at <https://doi.org/10.17605/OSF.IO/647EX> on July 22, 2022, represented our best knowledge of the study at that time.
-Subsequently, we improved our approaches to reproduction studies by revising pre-analysis plans and post-analysis reports into legible code RMarkdown documents.
-This change prompted us to re-order some content to flow more linearly with the sequencing required by code, and prompted us to digitize (if necessary) and import results from the original research into Rmarkdown for quantitative comparison to the reproduction study.
-These comparisons led to further insights and research into discrepancies between the original and reproduced Pearsons's correlations between various forms of the Kulldorff spatial scan statistic.
-We also discovered an improved method for comparing the results of generalized linear models by plotting all of the model results on a dot-wisker graph using the dotwhisker package.
-
-# Emily's Discussion
+------------------------------------------------------------------------
 
 Our reproduction of the original study was partially successful, leading to similar, but inexact results compared to the original study.
 A portion of the inexactitude may be attributed to differences in the computational environments.
 However, we have also reanalyzed the study and tested its robustness by changing some research parameters.
 Our results suggest support for the conclusions of the original study, but also emphasize the importance of reproduction studies to critically review the full details of the research design, to evaluate internal validity, and to test for uncertainty and robustness to key parameters.
 
-The choropleth map we made in the **first part** of the reproduction analysis (Figure 2) reveals an identical spatial pattern to that of the original study's Figure 1, confirming the equivalence of our dependent variable with that of the original study.
+The chloropleth map we made in the **first part** of the reproduction analysis (Figure 2) reveals an identical spatial pattern to that of the original study's Figure 1, confirming the equivalence of our dependent variable with that of the original study.
 Both maps revealed that COVID-19 cases were distributed unevenly across space.
 In particular, cases were more prevalent in the southern part of the country, in the metropolitan areas of the northeast, Chicago, and California, and in some rural areas, including eastern Washington, New Mexico, and Iowa.
 Prior to Chakraborty's bivariate analysis of disability and COVID-19 incidence, we also mapped the spatial distribution of disability (Figure 3).
@@ -2044,7 +2462,10 @@ However, we found weaker significance levels for the Black category and the Hisp
 We found stronger significance levels for the 18-34 and 35-64 age categories.
 Differences in our results can be attributable to our different approach to classifying relative risk scores and our different computational environments.
 
-Closer inspection of the clusters for the GEE models revealed a highly skewed distribution of cluster sizes, with most clusters containing very few counties and a few clusters containing 50 or more counties.
+We looked at each county's weight in GEE model in the five models of race, ethnicity, poverty status, age, and biological sex model weights. This led to a more accurate and comprehensive understanding of the data. The five maps did not show much variation in that states showed similar weights in the five maps.
+Visualizing helps the readability of the data and strengthen our argument.
+
+Moreover, closer inspection of the clusters for the GEE models revealed a highly skewed distribution of cluster sizes, with most clusters containing very few counties and a few clusters containing 50 or more counties.
 GEE weights observations based on the number of observations within a cluster and the degree of correlation in the standard errors within clusters.
 Therefore, counties within small clusters (e.g. the counties of Rhode Island or the few counties with high COVID risk classification) will have much larger weights than counties within large clusters (e.g. counties with low risk classifications in large states).
 The combination of very different cluster sizes and use of a clustering criteria related to the dependent variable warrant further analysis with alternative approaches to controlling for spatial dependence.
@@ -2063,9 +2484,18 @@ Finally, there are well-known problems with the testing and reporting of COVID-1
 This study partially mitigates measurement uncertainty by aggregating data across time (more than one year of the pandemic and the five-year ACS estimate) and into relatively large geographic units (counties).
 The study accounts for spatial dependency using the GEE models to cluster county observations by state and COVID risk classification.
 However, the GEE method simply uses correlation matrices to weight each county observation according to the number of observations in its cluster and the overall within-cluster correlation of standard errors.
-The spatial dependence between counties in different clusters is not modelled, even if the counties are adjacent to each other.
+The spatial dependence between counties in different clusters is not modeled, even if the counties are adjacent to each other.
 
 In sum, although some of our results differed from Chakraborty's because of differences in analytical methods, conceptualizations, and computational environments, our reproduction results still suggest that PwDs are likely to experience multiple jeopardy based on the convergence of their disability, racial/ethnic minority, and poverty status.
 We reiterate Chakraborty's carefully limited interpretation emphasizing county-level relationships and the need for additional data and research, because the estimated relationship at the county level may not hold at the individual level.
 Interpretation of the results were based on aggregate statistics at the county level and on statistical methods which produce approximate estimates, not inferences.
 Further work is needed to reliably infer relationships between minority PwDs and COVID-19 morbidity and mortality, especially at finer geographic scales.
+
+### Rationale for updated report
+
+This is the second version of our reproduction report.
+The first, registered at <https://doi.org/10.17605/OSF.IO/647EX> on July 22, 2022, represented our best knowledge of the study at that time.
+Subsequently, we improved our approaches to reproduction studies by revising pre-analysis plans and post-analysis reports into legible code RMarkdown documents.
+This change prompted us to re-order some content to flow more linearly with the sequencing required by code, and prompted us to digitize (if necessary) and import results from the original research into Rmarkdown for quantitative comparison to the reproduction study.
+These comparisons led to further insights and research into discrepancies between the original and reproduced Pearsons' correlations between various forms of the Kulldorff spatial scan statistic.
+We also discovered an improved method for comparing the results of generalized linear models by plotting all of the model results on a dot-whisker graph using the dot-whisker package.
