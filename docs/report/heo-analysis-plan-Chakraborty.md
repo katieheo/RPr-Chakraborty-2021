@@ -6,7 +6,7 @@ Author: Katie Heo
 
 I will be working on ... 
 
-1. The final chloropleth map has a mistaken parameter causing it to only use half of the available color ramp. This is important to fix as it is a data visualization problem that makes it difficult for readers to see the five different shades of orange that represent the race model weights.
+1. The final choropleth map has a mistaken parameter causing it to only use half of the available color ramp. This is important to fix as it is a data visualization problem that makes it difficult for readers to see the five different shades of orange that represent the race model weights.
 
 2. Moving the "rationale for the updated report" to the very end
 This is important as currently, the rationale is positioned before the discussion. It is more sensical for the rationale to be at the end of a study as its purpose is to convince the readers of the necessity and importance of the research.
