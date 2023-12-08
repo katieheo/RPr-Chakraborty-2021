@@ -18,7 +18,7 @@ The formatting of the missing data table is necessary to better reading and unde
 
 5. Separating a conclusions section from the discussion that concludes whether the reproduction attempt was successful, and what the implications are for how the original study contributes to scientific knowledge.
 
-6. Coming up with four different versions of the final chloropleth map (ethnicity, poverty status, age, and biological sex) to see the pattern of similarities and differences in their GEE model maps versus the Race Model Weights. 
+6. Coming up with four different versions of the final choropleth map (ethnicity, poverty status, age, and biological sex) to see the pattern of similarities and differences in their GEE model maps versus the Race Model Weights. 
 
 ## Results
 
