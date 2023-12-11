@@ -2166,10 +2166,13 @@ gee_resid5 <- gee_resid5 %>%
 Map each county's weight in GEE model (race, ethnicity, poverty status, age, biological sex).
 
 ```{r map-weights6}
+breaks <- c(0.2, 0.4, 0.6, 0.8, 1.0)
+
 tm_gee_weights <- tm_shape(gee_resid) +
   tm_polygons("w",
     title = "Race Model Weights",
     style = "jenks",
+    breaks = breaks,
     border.alpha = .2,
     lwd = 0.2,
     palette = "Oranges",
