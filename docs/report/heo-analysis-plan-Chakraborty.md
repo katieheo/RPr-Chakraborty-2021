@@ -6,7 +6,7 @@ Author: Katie Heo
 
 I will be working on ... 
 
-1. The final chloropleth map has a mistaken parameter causing it to only use half of the available color ramp. This is important to fix as it is a data visualization problem that makes it difficult for readers to see the five different shades of orange that represent the race model weights.
+1. The final choropleth map has a mistaken parameter causing it to only use half of the available color ramp. This is important to fix as it is a data visualization problem that makes it difficult for readers to see the five different shades of orange that represent the race model weights.
 
 2. Moving the "rationale for the updated report" to the very end
 This is important as currently, the rationale is positioned before the discussion. It is more sensical for the rationale to be at the end of a study as its purpose is to convince the readers of the necessity and importance of the research.
@@ -18,7 +18,7 @@ The formatting of the missing data table is necessary to better reading and unde
 
 5. Separating a conclusions section from the discussion that concludes whether the reproduction attempt was successful, and what the implications are for how the original study contributes to scientific knowledge.
 
-6. Coming up with four different versions of the final chloropleth map (ethnicity, poverty status, age, and biological sex) to see the pattern of similarities and differences in their GEE model maps versus the Race Model Weights. 
+6. Coming up with four different versions of the residuals in the final choropleth map (ethnicity, poverty status, age, and biological sex) to see the pattern of similarities and differences in their GEE model maps versus the Race Model Weights. 
 
 ## Results
 
@@ -32,7 +32,7 @@ The formatting of the missing data table is necessary to better reading and unde
 
 5. I will separate a conclusions section from the discussion.
 
-6. I will map each county's weight in GEE model for ethnicity, poverty status, age, and biological sex like the GEE model mapped for race in the original study. 
+6. I will map each county's weight in GEE model for ethnicity, poverty status, age, and biological sex like the GEE model mapped for race in the original study. Mapping residuals of the other models will help me think about spatial patterns of error in those as well.
 
 ## Discussion
 
