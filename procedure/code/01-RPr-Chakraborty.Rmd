@@ -10,7 +10,7 @@ knit: (function(inputFile, encoding) {
   rmarkdown::render(inputFile, encoding = encoding, output_dir = "../../docs") })
 ---
 
-Version 2.1 \| First Created July 7, 2021 \| Updated September 21st, 2023
+Version 2.1 \| First Created July 7, 2021 \| Updated December 12th, 2023
 
 # Abstract
 
@@ -2166,12 +2166,11 @@ gee_resid5 <- gee_resid5 %>%
 Map each county's weight in GEE model (race, ethnicity, poverty status, age, biological sex).
 
 ```{r map-weights6}
-breaks <- c(0.2, 0.4, 0.6, 0.8, 1.0)
+breaks <- c(0, 0.2, 0.4, 0.6, 0.8, 1.0)
 
 tm_gee_weights <- tm_shape(gee_resid) +
   tm_polygons("w",
     title = "Race Model Weights",
-    style = "jenks",
     breaks = breaks,
     border.alpha = .2,
     lwd = 0.2,
@@ -2197,10 +2196,13 @@ tm_gee_weights
 
 
 ```{r map-weights10}
+
+breaks <- c(0, 0.2, 0.4, 0.6, 0.8, 1.0)
+
 tm_gee_weights2 <- tm_shape(gee_resid2) +
   tm_polygons("w",
     title = "Ethnicity Model Weights",
-    style = "jenks",
+    breaks = breaks,
     border.alpha = .2,
     lwd = 0.2,
     palette = "Oranges",
@@ -2225,10 +2227,13 @@ tm_gee_weights2
 
 
 ```{r map-weights11}
+
+breaks <- c(0, 0.2, 0.4, 0.6, 0.8, 1.0)
+
 tm_gee_weights3 <- tm_shape(gee_resid3) +
   tm_polygons("w",
     title = "Poverty Status Model Weights",
-    style = "jenks",
+    breaks = breaks,
     border.alpha = .2,
     lwd = 0.2,
     palette = "Oranges",
@@ -2253,10 +2258,13 @@ tm_gee_weights3
 
 
 ```{r map-weights12}
+
+breaks <- c(0, 0.2, 0.4, 0.6, 0.8, 1.0)
+
 tm_gee_weights4 <- tm_shape(gee_resid4) +
   tm_polygons("w",
     title = "Age Model Weights",
-    style = "jenks",
+    breaks = breaks,
     border.alpha = .2,
     lwd = 0.2,
     palette = "Oranges",
@@ -2281,10 +2289,13 @@ tm_gee_weights4
 
 
 ```{r map-weights13}
+
+breaks <- c(0, 0.2, 0.4, 0.6, 0.8, 1.0)
+
 tm_gee_weights5 <- tm_shape(gee_resid5) +
   tm_polygons("w",
     title = "Biological Sex Model Weights",
-    style = "jenks",
+    breaks = breaks,
     border.alpha = .2,
     lwd = 0.2,
     palette = "Oranges",
@@ -2401,7 +2412,7 @@ A portion of the inexactitude may be attributed to differences in the computatio
 However, we have also reanalyzed the study and tested its robustness by changing some research parameters.
 Our results suggest support for the conclusions of the original study, but also emphasize the importance of reproduction studies to critically review the full details of the research design, to evaluate internal validity, and to test for uncertainty and robustness to key parameters.
 
-The chloropleth map we made in the **first part** of the reproduction analysis (Figure 2) reveals an identical spatial pattern to that of the original study's Figure 1, confirming the equivalence of our dependent variable with that of the original study.
+The choropleth map we made in the **first part** of the reproduction analysis (Figure 2) reveals an identical spatial pattern to that of the original study's Figure 1, confirming the equivalence of our dependent variable with that of the original study.
 Both maps revealed that COVID-19 cases were distributed unevenly across space.
 In particular, cases were more prevalent in the southern part of the country, in the metropolitan areas of the northeast, Chicago, and California, and in some rural areas, including eastern Washington, New Mexico, and Iowa.
 Prior to Chakraborty's bivariate analysis of disability and COVID-19 incidence, we also mapped the spatial distribution of disability (Figure 3).
@@ -2466,7 +2477,8 @@ We found stronger significance levels for the 18-34 and 35-64 age categories.
 Differences in our results can be attributable to our different approach to classifying relative risk scores and our different computational environments.
 
 We looked at each county's weight in GEE model in the five models of race, ethnicity, poverty status, age, and biological sex model weights. This led to a more accurate and comprehensive understanding of the data. The five maps did not show much variation in that states showed similar weights in the five maps.
-Visualizing helps the readability of the data and strengthen our argument.
+The generation of model weights maps for race, ethnicity, poverty status, age, and biological sex serves a crucial role in elucidating the differential impact of COVID-19 on various demographic categories. By setting manual breaks at specific intervals (0, 0.2, 0.4, 0.6, 0.8, and 1.0) in the model weights maps, we facilitate a clearer comparison of regions with higher Generalized Estimating Equation (GEE) weights, indicating the counties that significantly influence the model. Setting manual breaks in this manner gives each color the same meaning. This approach allows for a more nuanced understanding of how certain regions in the east and west coast play a more pivotal role in shaping the model's outcomes. The use of residual maps complements the analysis by providing insights into the spatial distribution of errors, highlighting areas where the model deviates from the observed data. The significance lies in the absence of spatial partners or clusters in the errors, indicating the model's effectiveness in capturing the underlying patterns. 
+In this study, the residual maps illustrate the misfit between the predicted values from the Generalized Estimating Equation (GEE) model and the actual COVID-19 incidence rates at the county level. Clusters or patterns in the residuals, as observed in spots in the metropolitan areas of the northeast and California, and in some rural areas, including eastern Washington, Oregon, and Arizona, suggest that certain geographic regions exhibit consistently higher or lower errors, signifying potential shortcomings in the model's representation of the spatial distribution of the outcome variable. The similarity between the residual maps and the model weights map underscores the importance of the latter in guiding the model to fit the data in counties with higher weights. This methodological transparency enhances the reliability and interpretability of the study's findings, contributing to a comprehensive evaluation of the relationship between COVID-19 and socio-demographic factors. The model weights map, derived from GEE modeling, becomes a valuable tool in identifying counties that significantly contribute to understanding the impact of COVID-19 across different demographic dimensions.
 
 Moreover, closer inspection of the clusters for the GEE models revealed a highly skewed distribution of cluster sizes, with most clusters containing very few counties and a few clusters containing 50 or more counties.
 GEE weights observations based on the number of observations within a cluster and the degree of correlation in the standard errors within clusters.
